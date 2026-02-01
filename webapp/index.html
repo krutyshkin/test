@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vercel Demo: Webapp + API</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <p class="eyebrow">Webapp frontend</p>
+        <h1>Разделённый frontend и backend для Vercel</h1>
+        <p>
+          Этот фронтенд живёт в каталоге <code>/webapp</code>, а серверлес API — в
+          <code>/api</code>.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Проверка API</h2>
+        <p>Введите имя и запросите ответ из <code>/api/hello</code>.</p>
+        <form id="hello-form">
+          <label for="name">Имя</label>
+          <input id="name" name="name" type="text" placeholder="Команда" />
+          <button type="submit">Отправить</button>
+        </form>
+        <pre id="result" aria-live="polite"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Секреты через Vercel Env</h2>
+        <p>
+          Серверлес функция читает переменную <code>SECRET_MESSAGE</code> из Vercel
+          Environment Variables. Попробуйте установить её при деплое.
+        </p>
+      </section>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

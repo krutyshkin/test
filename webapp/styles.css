@@ -1,0 +1,92 @@
+:root {
+  color-scheme: light;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  background: #f7f7fb;
+  color: #1d1d24;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7a6cff;
+}
+
+header h1 {
+  margin: 8px 0;
+  font-size: 32px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 15, 15, 0.08);
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 16px;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d8d8e5;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #5a44ff;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #4734e6;
+}
+
+pre {
+  margin-top: 16px;
+  background: #f1f1f8;
+  padding: 16px;
+  border-radius: 12px;
+  min-height: 80px;
+}
+
+@media (max-width: 600px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+}
