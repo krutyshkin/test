@@ -1,0 +1,134 @@
+:root {
+  color-scheme: dark;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: #0a0f1f;
+  color: #f2f5ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1b2345 0%, #0a0f1f 60%);
+}
+
+.app-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: 14px 18px;
+  backdrop-filter: blur(10px);
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #1f2a4a;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  object-fit: cover;
+}
+
+.balance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.balance strong {
+  font-size: 22px;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.tab-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f2f5ff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  background: #4b7dff;
+  border-color: #4b7dff;
+}
+
+.section {
+  margin-top: 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 180px;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 12px;
+  height: 120px;
+  object-fit: cover;
+  background: #0f1730;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(75, 125, 255, 0.2);
+  border: 1px solid rgba(75, 125, 255, 0.4);
+}
+
+.empty {
+  opacity: 0.7;
+  text-align: center;
+  padding: 32px 12px;
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
