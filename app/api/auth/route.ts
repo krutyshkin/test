@@ -1,41 +1,48 @@
+import { validate } from '@telegram-apps/init-data-node';
+import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
-import { verifyLoginWidget } from '@/lib/telegram';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
-  const payload = (await request.json()) as Record<string, string | number | undefined>;
+  const payload = (await request.json()) as { initData?: string };
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  if (!botToken) {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!botToken || !jwtSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const normalized = {
-    id: Number(payload.id),
-    first_name: payload.first_name ? String(payload.first_name) : undefined,
-    last_name: payload.last_name ? String(payload.last_name) : undefined,
-    username: payload.username ? String(payload.username) : undefined,
-    photo_url: payload.photo_url ? String(payload.photo_url) : undefined,
-    auth_date: Number(payload.auth_date),
-    hash: payload.hash ? String(payload.hash) : '',
-  };
-  const verified = verifyLoginWidget(normalized, botToken);
-  if (!verified) {
+  if (!payload.initData) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const response = NextResponse.json({ success: true });
-  response.cookies.set(
-    'tg_login',
-    JSON.stringify({
-      id: verified.id,
-      username: verified.username ?? null,
-      photo_url: verified.photo_url ?? null,
-    }),
+  try {
+    validate(payload.initData, botToken, { expiresIn: 60 * 5 });
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const params = new URLSearchParams(payload.initData);
+  const userRaw = params.get('user');
+  if (!userRaw) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const user = JSON.parse(userRaw) as { id: number; username?: string; photo_url?: string };
+
+  const token = jwt.sign(
     {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: true,
+      id: user.id,
+      username: user.username ?? null,
+      photo_url: user.photo_url ?? null,
     },
+    jwtSecret,
+    { expiresIn: '7d' },
   );
+
+  const response = NextResponse.json({ success: true });
+  response.cookies.set('tg_token', token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true,
+  });
   return response;
 }

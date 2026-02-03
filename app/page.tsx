@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type UserGift = {
   id: string;
@@ -28,19 +28,14 @@ type ProfileData = {
   gifts: UserGift[];
 };
 
-type LoginPayload = {
-  id: number;
-  first_name?: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-  auth_date: number;
-  hash: string;
-};
-
 declare global {
   interface Window {
-    onTelegramAuth?: (user: LoginPayload) => void;
+    Telegram?: {
+      WebApp?: {
+        initData?: string;
+        ready?: () => void;
+      };
+    };
   }
 }
 
@@ -49,9 +44,7 @@ export default function Home() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [market, setMarket] = useState<MarketItem[]>([]);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [widgetTimeout, setWidgetTimeout] = useState(false);
-
-  const botUsername = useMemo(() => process.env.NEXT_PUBLIC_BOT_USERNAME ?? '', []);
+  const [authStatus, setAuthStatus] = useState<'idle' | 'pending' | 'ready'>('idle');
 
   useEffect(() => {
     const load = async () => {
@@ -68,40 +61,49 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (profile?.user || !botUsername) {
+    if (profile?.user) {
       return;
     }
 
-    window.onTelegramAuth = async (user: LoginPayload) => {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (!initData) {
+      setAuthError('Откройте вебапп внутри Telegram, чтобы пройти авторизацию.');
+      return;
+    }
+
+    if (authStatus !== 'idle') {
+      return;
+    }
+
+    setAuthStatus('pending');
+
+    const authenticate = async () => {
       try {
         const response = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(user),
+          body: JSON.stringify({ initData }),
         });
 
         if (!response.ok) {
           setAuthError('Не удалось авторизоваться через Telegram.');
+          setAuthStatus('ready');
           return;
         }
 
         const profileResponse = await fetch('/api/profile', { credentials: 'include' });
         const profileData = (await profileResponse.json()) as ProfileData;
         setProfile(profileData);
+        setAuthStatus('ready');
+        window.Telegram?.WebApp?.ready?.();
       } catch {
         setAuthError('Ошибка сети при авторизации.');
+        setAuthStatus('ready');
       }
     };
 
-    const timeout = window.setTimeout(() => {
-      setWidgetTimeout(true);
-    }, 2500);
-
-    return () => {
-      window.onTelegramAuth = undefined;
-      window.clearTimeout(timeout);
-    };
-  }, [botUsername, profile?.user]);
+    authenticate();
+  }, [authStatus, profile?.user]);
 
   return (
     <main>
@@ -126,27 +128,9 @@ export default function Home() {
       {!profile?.user && (
         <section className="section">
           <h2>Вход через Telegram</h2>
-          {botUsername ? (
-            <>
-              <p>Используйте официальный Telegram Login Widget для авторизации.</p>
-              <div
-                id="telegram-login"
-                className="login-widget"
-                dangerouslySetInnerHTML={{
-                  __html: `<script async src=\"https://telegram.org/js/telegram-widget.js?22\" data-telegram-login=\"${botUsername}\" data-size=\"large\" data-userpic=\"false\" data-onauth=\"onTelegramAuth(user)\" data-request-access=\"write\"></script>`,
-                }}
-              />
-              {authError && <p className="empty">{authError}</p>}
-              {widgetTimeout && (
-                <p className="empty">
-                  Виджет не загрузился. Убедитесь, что сайт открыт по HTTPS и домен добавлен в
-                  настройках бота.
-                </p>
-              )}
-            </>
-          ) : (
-            <p className="empty">Укажите NEXT_PUBLIC_BOT_USERNAME в переменных окружения.</p>
-          )}
+          <p>Авторизация выполняется автоматически внутри Telegram WebApp.</p>
+          {authStatus === 'pending' && <p className="empty">Проверяем данные Telegram…</p>}
+          {authError && <p className="empty">{authError}</p>}
         </section>
       )}
 

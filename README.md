@@ -25,7 +25,7 @@
 2. Создайте `.env.local`:
    ```env
    TELEGRAM_BOT_TOKEN=123456:bot_token
-   NEXT_PUBLIC_BOT_USERNAME=your_bot_username
+   JWT_SECRET=super-secret
    ADMIN_IDS=123456789
    WEBAPP_URL=http://localhost:3000
    POSTGRES_URL=postgres://user:pass@host:5432/db
@@ -65,11 +65,10 @@
 - `POST /api/admin/grant` — выдать подарок (admin).
 - `POST /api/admin/revoke` — убрать подарок (admin).
 
-## Авторизация (Telegram Login Widget)
+## Авторизация (Telegram WebApp initData)
 
-Вебапп использует официальный Telegram Login Widget и проверяет подпись на сервере. 
-Для работы укажите `NEXT_PUBLIC_BOT_USERNAME` (юзернейм бота без `@`) и `TELEGRAM_BOT_TOKEN`.
-Также убедитесь, что домен добавлен в настройки бота и вебапп открыт по HTTPS.
+Вебапп использует `https://telegram.org/js/telegram-web-app.js` и автоматически валидирует `initData` на сервере.
+Для работы укажите `TELEGRAM_BOT_TOKEN` и `JWT_SECRET`. Приложение должно быть открыто внутри Telegram.
 
 ## Интеграция с Telegram Gift Changes API
 

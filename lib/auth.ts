@@ -1,12 +1,20 @@
 import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
+
+type JwtPayload = {
+  id: number;
+  username?: string | null;
+  photo_url?: string | null;
+};
 
 export function requireTelegramUser() {
-  const cookie = cookies().get('tg_login')?.value;
-  if (!cookie) {
+  const token = cookies().get('tg_token')?.value;
+  const secret = process.env.JWT_SECRET;
+  if (!token || !secret) {
     throw new Error('Unauthorized');
   }
   try {
-    return JSON.parse(cookie) as { id: number; username?: string | null; photo_url?: string | null };
+    return jwt.verify(token, secret) as JwtPayload;
   } catch {
     throw new Error('Unauthorized');
   }

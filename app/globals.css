@@ -129,9 +129,6 @@ body {
   padding: 32px 12px;
 }
 
-.login-widget {
-  margin-top: 12px;
-}
 
 @media (max-width: 720px) {
   .app-shell {
