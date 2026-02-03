@@ -4,6 +4,8 @@ import { requireTelegramUser } from '@/lib/auth';
 import { isAdmin } from '@/lib/telegram';
 import { addGiftSchema } from '@/lib/validation';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const user = requireTelegramUser();

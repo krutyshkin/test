@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { verifyInitData } from '@/lib/telegram';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const { initData } = (await request.json()) as { initData?: string };
   const botToken = process.env.TELEGRAM_BOT_TOKEN;

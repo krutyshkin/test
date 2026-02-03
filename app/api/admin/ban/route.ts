@@ -4,6 +4,8 @@ import { isAdmin } from '@/lib/telegram';
 import { banSchema } from '@/lib/validation';
 import { setUserBan } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const admin = requireTelegramUser();

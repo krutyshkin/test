@@ -1,6 +1,10 @@
 import { sql } from '@vercel/postgres';
+import type { QueryResultRow } from '@vercel/postgres';
 
-export async function query<T>(strings: TemplateStringsArray, ...values: unknown[]) {
+export async function query<T extends QueryResultRow>(
+  strings: TemplateStringsArray,
+  ...values: any[]
+) {
   return sql<T>(strings, ...values);
 }
 

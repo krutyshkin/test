@@ -4,6 +4,8 @@ import { isAdmin } from '@/lib/telegram';
 import { balanceSchema } from '@/lib/validation';
 import { getUserByTelegramId, updateUserBalance } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const admin = requireTelegramUser();

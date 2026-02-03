@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 
 const BASE_URL = 'https://cdn.changes.tg/gifts';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const gift = searchParams.get('gift');

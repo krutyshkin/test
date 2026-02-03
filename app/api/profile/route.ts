@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { ensureUser, listUserGifts, query } from '@/lib/db';
 import { requireTelegramUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const user = requireTelegramUser();

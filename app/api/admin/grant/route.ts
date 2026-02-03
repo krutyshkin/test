@@ -4,6 +4,8 @@ import { isAdmin } from '@/lib/telegram';
 import { grantGiftSchema } from '@/lib/validation';
 import { getUserByTelegramId, grantGift } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const admin = requireTelegramUser();
