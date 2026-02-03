@@ -25,6 +25,7 @@
 2. Создайте `.env.local`:
    ```env
    TELEGRAM_BOT_TOKEN=123456:bot_token
+   NEXT_PUBLIC_BOT_USERNAME=your_bot_username
    ADMIN_IDS=123456789
    WEBAPP_URL=http://localhost:3000
    POSTGRES_URL=postgres://user:pass@host:5432/db
@@ -63,6 +64,11 @@
 - `POST /api/admin/ban` — бан/разбан (admin).
 - `POST /api/admin/grant` — выдать подарок (admin).
 - `POST /api/admin/revoke` — убрать подарок (admin).
+
+## Авторизация (Telegram Login Widget)
+
+Вебапп использует официальный Telegram Login Widget и проверяет подпись на сервере. 
+Для работы укажите `NEXT_PUBLIC_BOT_USERNAME` (юзернейм бота без `@`) и `TELEGRAM_BOT_TOKEN`.
 
 ## Интеграция с Telegram Gift Changes API
 

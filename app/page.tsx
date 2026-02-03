@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type UserGift = {
   id: string;
@@ -28,10 +28,29 @@ type ProfileData = {
   gifts: UserGift[];
 };
 
+type LoginPayload = {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+  hash: string;
+};
+
+declare global {
+  interface Window {
+    onTelegramAuth?: (user: LoginPayload) => void;
+  }
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'profile' | 'market'>('profile');
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [market, setMarket] = useState<MarketItem[]>([]);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const botUsername = useMemo(() => process.env.NEXT_PUBLIC_BOT_USERNAME ?? '', []);
 
   useEffect(() => {
     const load = async () => {
@@ -46,6 +65,52 @@ export default function Home() {
 
     load().catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    if (profile?.user || !botUsername) {
+      return;
+    }
+
+    const container = document.getElementById('telegram-login');
+    if (!container || container.childElementCount > 0) {
+      return;
+    }
+
+    window.onTelegramAuth = async (user: LoginPayload) => {
+      try {
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(user),
+        });
+
+        if (!response.ok) {
+          setAuthError('Не удалось авторизоваться через Telegram.');
+          return;
+        }
+
+        const profileResponse = await fetch('/api/profile', { credentials: 'include' });
+        const profileData = (await profileResponse.json()) as ProfileData;
+        setProfile(profileData);
+      } catch {
+        setAuthError('Ошибка сети при авторизации.');
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.async = true;
+    script.dataset.telegramLogin = botUsername;
+    script.dataset.size = 'large';
+    script.dataset.userpic = 'false';
+    script.dataset.onauth = 'onTelegramAuth(user)';
+    script.dataset.requestAccess = 'write';
+    container.appendChild(script);
+
+    return () => {
+      window.onTelegramAuth = undefined;
+    };
+  }, [botUsername, profile?.user]);
 
   return (
     <main>
@@ -66,6 +131,21 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {!profile?.user && (
+        <section className="section">
+          <h2>Вход через Telegram</h2>
+          {botUsername ? (
+            <>
+              <p>Используйте официальный Telegram Login Widget для авторизации.</p>
+              <div id="telegram-login" />
+              {authError && <p className="empty">{authError}</p>}
+            </>
+          ) : (
+            <p className="empty">Укажите NEXT_PUBLIC_BOT_USERNAME в переменных окружения.</p>
+          )}
+        </section>
+      )}
 
       <div className="tabs">
         <button

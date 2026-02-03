@@ -1,21 +1,13 @@
-import { cookies, headers } from 'next/headers';
-import { verifyInitData } from './telegram';
-
-export function getInitData() {
-  const headerInitData = headers().get('x-telegram-init-data');
-  const cookieInitData = cookies().get('tg_init_data')?.value;
-  return headerInitData ?? cookieInitData ?? '';
-}
+import { cookies } from 'next/headers';
 
 export function requireTelegramUser() {
-  const initData = getInitData();
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  if (!botToken) {
-    throw new Error('Missing TELEGRAM_BOT_TOKEN');
-  }
-  const user = verifyInitData(initData, botToken);
-  if (!user) {
+  const cookie = cookies().get('tg_login')?.value;
+  if (!cookie) {
     throw new Error('Unauthorized');
   }
-  return user;
+  try {
+    return JSON.parse(cookie) as { id: number; username?: string | null; photo_url?: string | null };
+  } catch {
+    throw new Error('Unauthorized');
+  }
 }
