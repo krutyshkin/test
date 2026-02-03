@@ -77,8 +77,8 @@ self.addEventListener("message", async (event: MessageEvent<WorkerMessage>) => {
         `scale=iw/((1+${zoom})*(1-${crop})):ih/((1+${zoom})*(1-${crop})):flags=lanczos`,
         `colorchannelmixer=rr=1:rg=${shift}:rb=0:gr=${-shift}:gg=1:gb=0:br=0:bg=${shift}:bb=1`,
         `noise=alls=${noise}:allf=t+u`,
-        \"format=yuv420p\"
-      ].join(\",\");
+        "format=yuv420p"
+      ].join(",");
 
       await ffmpeg.exec([
         "-i",
