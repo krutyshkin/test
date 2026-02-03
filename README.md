@@ -69,6 +69,7 @@
 
 Вебапп использует официальный Telegram Login Widget и проверяет подпись на сервере. 
 Для работы укажите `NEXT_PUBLIC_BOT_USERNAME` (юзернейм бота без `@`) и `TELEGRAM_BOT_TOKEN`.
+Также убедитесь, что домен добавлен в настройки бота и вебапп открыт по HTTPS.
 
 ## Интеграция с Telegram Gift Changes API
 

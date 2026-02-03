@@ -49,6 +49,7 @@ export default function Home() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [market, setMarket] = useState<MarketItem[]>([]);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [widgetTimeout, setWidgetTimeout] = useState(false);
 
   const botUsername = useMemo(() => process.env.NEXT_PUBLIC_BOT_USERNAME ?? '', []);
 
@@ -68,11 +69,6 @@ export default function Home() {
 
   useEffect(() => {
     if (profile?.user || !botUsername) {
-      return;
-    }
-
-    const container = document.getElementById('telegram-login');
-    if (!container || container.childElementCount > 0) {
       return;
     }
 
@@ -97,18 +93,13 @@ export default function Home() {
       }
     };
 
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    script.dataset.telegramLogin = botUsername;
-    script.dataset.size = 'large';
-    script.dataset.userpic = 'false';
-    script.dataset.onauth = 'onTelegramAuth(user)';
-    script.dataset.requestAccess = 'write';
-    container.appendChild(script);
+    const timeout = window.setTimeout(() => {
+      setWidgetTimeout(true);
+    }, 2500);
 
     return () => {
       window.onTelegramAuth = undefined;
+      window.clearTimeout(timeout);
     };
   }, [botUsername, profile?.user]);
 
@@ -138,8 +129,20 @@ export default function Home() {
           {botUsername ? (
             <>
               <p>Используйте официальный Telegram Login Widget для авторизации.</p>
-              <div id="telegram-login" />
+              <div
+                id="telegram-login"
+                className="login-widget"
+                dangerouslySetInnerHTML={{
+                  __html: `<script async src=\"https://telegram.org/js/telegram-widget.js?22\" data-telegram-login=\"${botUsername}\" data-size=\"large\" data-userpic=\"false\" data-onauth=\"onTelegramAuth(user)\" data-request-access=\"write\"></script>`,
+                }}
+              />
               {authError && <p className="empty">{authError}</p>}
+              {widgetTimeout && (
+                <p className="empty">
+                  Виджет не загрузился. Убедитесь, что сайт открыт по HTTPS и домен добавлен в
+                  настройках бота.
+                </p>
+              )}
             </>
           ) : (
             <p className="empty">Укажите NEXT_PUBLIC_BOT_USERNAME в переменных окружения.</p>
